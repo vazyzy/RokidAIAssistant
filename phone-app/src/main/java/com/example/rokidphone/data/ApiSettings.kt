@@ -124,6 +124,15 @@ enum class AiProvider(
         supportsSpeech = true,
         supportsVision = true
     ),
+    PRIVATE_SERVER(
+        displayNameResId = R.string.provider_private_server,
+        description = "Self-hosted server with photo analysis + voice endpoints",
+        website = "",
+        defaultBaseUrl = "",
+        isOpenAiCompatible = false,
+        supportsSpeech = false,
+        supportsVision = true
+    ),
     CUSTOM(
         displayNameResId = R.string.provider_custom,
         description = "OpenAI-compatible API (Ollama, LM Studio, etc.)",
@@ -724,6 +733,10 @@ data class ApiSettings(
     val moonshotApiKey: String = "",
     val customApiKey: String = "",
     
+    // Private server settings (self-hosted AI endpoint)
+    val privateServerUrl: String = "",
+    val privateServerToken: String = "",
+
     // Custom base URLs (for providers that support it)
     val customBaseUrl: String = "http://localhost:11434/v1/",
     val customModelName: String = "llama4",
@@ -850,7 +863,8 @@ data class ApiSettings(
             AiProvider.BAIDU -> baiduApiKey
             AiProvider.PERPLEXITY -> perplexityApiKey
             AiProvider.MOONSHOT -> moonshotApiKey
-            AiProvider.GEMINI_LIVE -> geminiApiKey  // Shares Gemini API key
+            AiProvider.GEMINI_LIVE -> geminiApiKey
+            AiProvider.PRIVATE_SERVER -> privateServerToken
             AiProvider.CUSTOM -> customApiKey
         }
     }
@@ -871,11 +885,12 @@ data class ApiSettings(
             AiProvider.BAIDU -> baiduApiKey
             AiProvider.PERPLEXITY -> perplexityApiKey
             AiProvider.MOONSHOT -> moonshotApiKey
-            AiProvider.GEMINI_LIVE -> geminiApiKey  // Shares Gemini API key
+            AiProvider.GEMINI_LIVE -> geminiApiKey
+            AiProvider.PRIVATE_SERVER -> privateServerToken
             AiProvider.CUSTOM -> customApiKey
         }
     }
-    
+
     /**
      * Get base URL for current provider
      */
@@ -903,6 +918,7 @@ data class ApiSettings(
         return when (aiProvider) {
             AiProvider.CUSTOM -> customBaseUrl.isNotBlank() && isValidUrl(customBaseUrl)
             AiProvider.BAIDU -> baiduApiKey.isNotBlank() && baiduSecretKey.isNotBlank()
+            AiProvider.PRIVATE_SERVER -> privateServerUrl.isNotBlank() && isValidUrl(privateServerUrl)
             else -> getCurrentApiKey().isNotBlank()
         }
     }

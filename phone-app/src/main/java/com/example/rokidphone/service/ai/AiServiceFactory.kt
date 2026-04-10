@@ -149,6 +149,12 @@ object AiServiceFactory {
                 presencePenalty = settings.presencePenalty
             )
             
+            AiProvider.PRIVATE_SERVER -> PrivateServerService(
+                baseUrl = settings.privateServerUrl,
+                authToken = settings.privateServerToken,
+                sessionId = "glasses-main"
+            )
+
             AiProvider.CUSTOM -> OpenAiCompatibleService(
                 apiKey = settings.customApiKey,
                 baseUrl = settings.getCurrentBaseUrl(),
@@ -184,7 +190,7 @@ object AiServiceFactory {
      */
     fun createTestService(settings: ApiSettings): OpenAiCompatibleService? {
         return when (settings.aiProvider) {
-            AiProvider.GEMINI, AiProvider.ANTHROPIC, AiProvider.BAIDU, AiProvider.GEMINI_LIVE -> null // Not OpenAI-compatible
+            AiProvider.GEMINI, AiProvider.ANTHROPIC, AiProvider.BAIDU, AiProvider.GEMINI_LIVE, AiProvider.PRIVATE_SERVER -> null // Not OpenAI-compatible
             
             AiProvider.OPENAI, AiProvider.DEEPSEEK, AiProvider.GROQ, 
             AiProvider.XAI, AiProvider.ALIBABA, AiProvider.ZHIPU, AiProvider.PERPLEXITY,
