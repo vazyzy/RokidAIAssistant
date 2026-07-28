@@ -243,6 +243,26 @@ sealed class ProviderSetting {
     }
     
     /**
+     * Private Server Provider Settings
+     * Self-hosted server with photo analysis + voice endpoints.
+     * Base URL must be configured in settings (no default).
+     */
+    @Serializable
+    data class PrivateServer(
+        override val id: String = "private_server",
+        override val displayName: String = "Private Server",
+        override val enabled: Boolean = true,
+        val baseUrl: String = "",
+        val authToken: String = ""
+    ) : ProviderSetting() {
+        @Transient
+        override val providerApiKey: String? = authToken.ifBlank { null }
+        @Transient
+        override val providerBaseUrl: String = baseUrl
+        override fun isValid(): Boolean = baseUrl.isNotBlank()
+    }
+
+    /**
      * Custom OpenAI-compatible Provider Settings
      * Supports Ollama, LM Studio, vLLM, and other local deployments
      */
@@ -279,6 +299,7 @@ sealed class ProviderSetting {
             Baidu(),
             Perplexity(),
             Moonshot(),
+            PrivateServer(),
             Custom()
         )
         
@@ -297,6 +318,7 @@ sealed class ProviderSetting {
             "baidu" -> Baidu()
             "perplexity" -> Perplexity()
             "moonshot" -> Moonshot()
+            "vps" -> PrivateServer()
             "custom" -> Custom()
             else -> null
         }
